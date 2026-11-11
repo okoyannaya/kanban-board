@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --text: #060b18;
+    --background: #fbfcfe;
+    --primary: #476ad1;
+    --secondary: #e189c2;
+    --accent: #d8646a;
+  }
+
+  .dark {
+    --text: #e7ecf9;
+    --background: #010204;
+    --primary: #2e50b8;
+    --secondary: #761e57;
+    --accent: #9b272d;
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
