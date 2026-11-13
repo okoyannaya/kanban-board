@@ -1,0 +1,13 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@config",
+      "description": "Подключает конфигурацию Tailwind CSS."
+    },
+    {
+      "name": "@theme",
+      "description": "Объявляет токены темы Tailwind CSS; поддерживает модификатор inline."
+    }
+  ]
+}

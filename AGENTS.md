@@ -1,9 +1,64 @@
-<!-- BEGIN:nextjs-agent-rules -->
 
-## This is NOT the Next.js you know
+1. Обзор проекта
+Веб-приложение Канбан-доска (Kanban Board) для управления задачами, колонками и проектами. Архитектура построена на базе Next.js App Router с акцентом на производительность, строгую типизацию и переиспользуемые UI-компоненты.
+2. Технологический стек
+Фреймворк: Next.js (App Router, актуальная версия)
+Библиотека UI: React (актуальная версия, Server & Client Components)
+Язык: TypeScript (Strict mode)
+Стилизация: Tailwind CSS
+Дополнительные библиотеки:
+- next-themes — управление светлой, тёмной и системной темой, сохранение выбора в localStorage и раннее применение темы без мигания.
+3. Основные команды (CLI)
+Запуск dev-сервера: npm run dev (или pnpm dev / yarn dev)
+Сборка проекта: npm run build
+Проверка типов: npx tsc --noEmit
+Линтер и форматирование: npm run lint
+4. Архитектура и структура папок
+Проект следует структуре Next.js App Router:
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+src/ ├── app/            # Маршруты, layout.tsx, page.tsx (Server Components) ├── components/     # Переиспользуемые UI-компоненты (кнопки, модалки, инпуты) ├── features/       # Доменная логика (колонки, карточки задач, drag-and-drop) ├── hooks/          # Кастомные клиентские React-хуки (`use*`) ├── lib/            # Утилиты, хелперы, конфигурация клиентов └── types/          # Общие TypeScript интерфейсы и типы
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+src/shared/ui/ — общие UI-компоненты в отдельных папках, например themeToggle/index.tsx.
+src/providers/ — все React-провайдеры приложения, включая клиентский ThemeProvider.
+.vscode/ — настройки редактора; cssCustomData.json описывает директивы Tailwind CSS для встроенной CSS-проверки.
 
-<!-- END:nextjs-agent-rules -->
+Правило именования файлов и папок:
+Используйте camelCase для имён собственных файлов и директорий проекта: themeProvider.tsx, themeToggle/index.tsx, useTheme.ts. Не смешивайте camelCase со snake_case, kebab-case или PascalCase в путях.
+Имена React-компонентов, интерфейсов и типов в коде записываются в PascalCase: ThemeToggle, ThemeProviderProps.
+Для служебных и конфигурационных файлов используйте имена, предусмотренные инструментами или стандартными соглашениями: page.tsx, not-found.tsx, next.config.ts, next-env.d.ts, package-lock.json, AGENTS.md, README.md и т. п.
+
+Правило организации UI-компонентов:
+Каждый UI-компонент должен располагаться в собственной директории внутри ui/ с точкой входа в файле index.tsx. Имя директории соответствует имени компонента в camelCase, например src/shared/ui/button/index.tsx или src/shared/ui/themeToggle/index.tsx.
+Сопутствующие стили, типы, хуки и тесты компонента размещаются в его директории. Такая структура изолирует связанные файлы, упрощает расширение компонентов и сохраняет единообразие кодовой базы.
+Импортируйте компонент по пути к его директории, без указания index.tsx.
+
+5. Правила написания кода (Code Style)
+Компоненты и Next.js
+Серверные компоненты (Server Components): Используются по умолчанию. Файлы роутинга (page.tsx, layout.tsx, loading.tsx, error.tsx) должны использовать export default согласно спецификации Next.js. Обычные серверные компоненты можно оформлять через export function ComponentName().
+Клиентские компоненты (Client Components): Обязательно добавлять директиву 'use client' в первой строке файла. Оформлять только как стрелочные функции с именованным экспортом:
+
+'use client';  export const TaskCard = ({ title }: TaskCardProps) => { ... };
+
+Разделяйте серверную и клиентскую логику: опускайте 'use client' как можно ниже по дереву компонентов (например, делайте интерактивной только саму карточку, а не всю страницу).
+TypeScript
+Запрещено использование any. Используйте unknown с проверкой типов или строгие интерфейсы.
+Для пропсов компонентов создавайте interface или type с суффиксом Props (например, BoardColumnProps) прямо над компонентом или в types/.
+Избегайте избыточных приведений типов (as).
+Стили и CSS-переменные (Tailwind CSS)
+Запрет на дублирование CSS-переменных: Перед созданием новой CSS-переменной в globals.css или конфигурации темы Tailwind обязательно проверьте существующие переменные. Переиспользуйте уже объявленные токены цветов, отступов и шрифтов.
+Используйте utility-классы Tailwind CSS. Избегайте инлайновых стилей (style={{ ... }}), за исключением динамических координат (например, при перетаскивании карточек).
+Для условного объединения классов используйте утилиту clsx / tailwind-merge (если подключена) или аккуратные шаблонные строки без лишних пробелов.
+Управление состоянием и работа с данными
+Не храните дублирующееся состояние в useState, если данные можно вычислить во время рендера.
+Вся бизнес-логика канбан-доски (перемещение карточек, фильтрация, создание колонок) должна быть вынесена из UI-компонентов в кастомные хуки или отдельные модули в features/.
+6. Правила работы с зависимостями и документацией
+Самоактуализация AGENTS.md: Если в ходе задачи вы устанавливаете новую библиотеку (например, dnd-kit, zustand, lucide-react, zod и т.д.), вы обязаны сразу добавить её название и назначение в раздел «2. Технологический стек» этого файла.
+Не устанавливайте тяжелые библиотеки для простых задач, которые легко решаются средствами React/Tailwind.
+7. Чеклист перед завершением задачи (Обязательно)
+После написания или изменения кода агент обязан выполнить следующие шаги перед тем, как завершить работу:
+Запустить линтер (npm run lint) и исправить все предупреждения и ошибки, чтобы код полностью соответствовал общему стилю проекта.
+Убедиться, что нет ошибок компиляции TypeScript (npx tsc --noEmit).
+Проверить, что не были созданы дубликаты CSS-переменных или неиспользуемые импорты.
+Обновить AGENTS.md, если менялась структура папок или добавлялись новые пакеты.
+
+
