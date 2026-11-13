@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 interface ThemeProviderProps {
@@ -8,11 +9,7 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => (
-  <NextThemesProvider
-    attribute="class"
-    defaultTheme="system"
-    enableColorScheme={false}
-  >
+  <NextThemesProvider attribute="class" defaultTheme="system" enableColorScheme={false}>
     {children}
   </NextThemesProvider>
 );
